@@ -16,7 +16,7 @@ public partial class TripContext : DbContext
         public virtual DbSet<Client> Clients { get; set; } = null!;
         public virtual DbSet<ClientTrip> ClientTrips { get; set; } = null!;
         public virtual DbSet<Country> Countries { get; set; } = null!;
-        public virtual DbSet<CountryTrip> CountryTrips { get; set; } = null!;  // Dodaj tę linię
+        public virtual DbSet<CountryTrip> CountryTrips { get; set; } = null!;
         public virtual DbSet<Trip> Trips { get; set; } = null!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
