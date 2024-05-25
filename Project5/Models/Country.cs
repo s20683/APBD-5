@@ -1,10 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Project5.Models;
 
-public partial class Country
+public class Country
 {
+    [Key]
+    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public int IdCountry { get; set; }
 
     public string Name { get; set; } = null!;

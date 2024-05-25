@@ -58,4 +58,41 @@ public class TripsController : ControllerBase
 
         return NoContent();
     }
+    
+    [HttpPost("{idTrip}/clients")]
+    public async Task<IActionResult> AssignClientToTrip(int idTrip, ClientTripRequestDto clientRequest)
+    {
+        var trip = await _context.Trips.FindAsync(idTrip);
+        if (trip == null)
+        {
+            return NotFound("Wycieczka nie istnieje.");
+        }
+
+        var existingClient = await _context.Clients.FirstOrDefaultAsync(c => c.Pesel == clientRequest.Pesel);
+        if (existingClient == null)
+        {
+            existingClient = clientRequest.ToClientDBO();
+            _context.Clients.Add(existingClient);
+            await _context.SaveChangesAsync();
+        }
+
+        var existingAssignment = await _context.ClientTrips
+            .AnyAsync(ct => ct.IdClient == existingClient.IdClient && ct.IdTrip == idTrip);
+        if (existingAssignment)
+        {
+            return BadRequest("Klient jest już zapisany na tę wycieczkę.");
+        }
+
+        var clientTrip = new ClientTrip
+        {
+            IdClient = existingClient.IdClient,
+            IdTrip = idTrip,
+            RegisteredAt = DateTime.Now,
+            PaymentDate = clientRequest.PaymentDate
+        };
+        _context.ClientTrips.Add(clientTrip);
+        await _context.SaveChangesAsync();
+
+        return Ok("Klient został pomyślnie przypisany do wycieczki.");
+    }
 }
