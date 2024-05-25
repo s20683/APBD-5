@@ -34,4 +34,28 @@ public class TripsController : ControllerBase
 
         return Ok(trips);
     }
+    
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> DeleteClient(int id)
+    {
+        var client = await _context.Clients.FindAsync(id);
+        if (client == null)
+        {
+            return NotFound();
+        }
+
+        var assignedTrips = await _context.ClientTrips
+            .Where(ct => ct.IdClient == id)
+            .AnyAsync();
+
+        if (assignedTrips)
+        {
+            return BadRequest("Nie można usunąć klienta, ponieważ ma przypisane wycieczki.");
+        }
+
+        _context.Clients.Remove(client);
+        await _context.SaveChangesAsync();
+
+        return NoContent();
+    }
 }
